@@ -1,4 +1,4 @@
-mod finite_automaton;
+mod nfa;
 
 use itertools::Itertools as _;
 use std::{cmp::min, collections::HashSet, sync::LazyLock};

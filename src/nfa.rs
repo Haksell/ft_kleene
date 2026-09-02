@@ -1,18 +1,19 @@
 use std::collections::HashSet;
 
 // https://en.wikipedia.org/wiki/Nondeterministic_finite_automaton#Automaton
-struct FiniteAutomaton {
-    states: Vec<State>,
+struct NFA {
+    states: Vec<NFAState>,
     alphabet: Vec<char>,
-    transitions: Vec<Vec<Vec<State>>>,
+    transitions: Vec<Vec<Vec<NFAState>>>,
     initial_state: usize,
     accepting_states: HashSet<usize>,
 }
 
-impl FiniteAutomaton {
+impl NFA {
+    // https://en.wikipedia.org/wiki/Thompson's_construction
     fn new(regex: &str) -> Self {
         todo!()
     }
 }
 
-struct State {}
+struct NFAState {}
