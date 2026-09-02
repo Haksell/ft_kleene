@@ -73,6 +73,47 @@ pub fn kleene_star_acceptor(sigma: &str, s: &str) -> bool {
     s.chars().all(|c| alphabet.contains(&c))
 }
 
+/// Accepts strings of the form ab(a|b)aaa(a|b)*ab.
+pub fn my_rg_acceptor(s: &str) -> bool {
+    #[derive(PartialEq)]
+    #[expect(clippy::upper_case_acronyms)]
+    enum State {
+        Empty,
+        A,
+        AB,
+        ABX,
+        ABXA,
+        ABXAA,
+        ABXAAAS,
+        ABXAAASA,
+        ABXAAASAB,
+        Sink,
+    }
+
+    assert!(
+        s.chars().all(|c| c == 'a' || c == 'b'),
+        "my_rg_acceptor is defined over the alphabet Σ = ab"
+    );
+
+    let mut state = State::Empty;
+
+    for c in s.chars() {
+        state = match (state, c) {
+            (State::Empty, 'a') => State::A,
+            (State::A, 'b') => State::AB,
+            (State::AB, _) => State::ABX,
+            (State::ABX, 'a') => State::ABXA,
+            (State::ABXA, 'a') => State::ABXAA,
+            (State::ABXAA, 'a') | (State::ABXAAAS | State::ABXAAASAB, 'b') => State::ABXAAAS,
+            (State::ABXAAAS | State::ABXAAASA | State::ABXAAASAB, 'a') => State::ABXAAASA,
+            (State::ABXAAASA, 'b') => State::ABXAAASAB,
+            _ => State::Sink,
+        }
+    }
+
+    state == State::ABXAAASAB
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -157,5 +198,48 @@ mod tests {
 
         assert!(!kleene_star_acceptor("", "a"));
         assert!(!kleene_star_acceptor("a", "b"));
+    }
+
+    #[test]
+    fn my_rg_acceptor_accepts() {
+        assert!(my_rg_acceptor("abaaaaab"));
+        assert!(my_rg_acceptor("abbaaaab"));
+
+        assert!(my_rg_acceptor("abaaaaaab"));
+        assert!(my_rg_acceptor("abbaaaaab"));
+        assert!(my_rg_acceptor("abaaaabab"));
+        assert!(my_rg_acceptor("abbaaabab"));
+
+        assert!(my_rg_acceptor("abaaaaaaab"));
+        assert!(my_rg_acceptor("abbaaaaaab"));
+        assert!(my_rg_acceptor("abaaaaabab"));
+        assert!(my_rg_acceptor("abbaaaabab"));
+        assert!(my_rg_acceptor("abaaaabaab"));
+        assert!(my_rg_acceptor("abbaaabaab"));
+        assert!(my_rg_acceptor("abaaaabbab"));
+        assert!(my_rg_acceptor("abbaaabbab"));
+
+        assert!(my_rg_acceptor("abaaaaabbbbbbbbbab"));
+        assert!(my_rg_acceptor("abaaaaabababababab"));
+    }
+
+    #[test]
+    fn my_rg_acceptor_rejects() {
+        assert!(!my_rg_acceptor(""));
+
+        assert!(!my_rg_acceptor("bbaaaaab"));
+        assert!(!my_rg_acceptor("aaaaaaab"));
+        assert!(!my_rg_acceptor("ababaaab"));
+        assert!(!my_rg_acceptor("abaabaab"));
+        assert!(!my_rg_acceptor("abaaabab"));
+
+        assert!(!my_rg_acceptor("abaaaaaaabb"));
+        assert!(!my_rg_acceptor("abaaaaaaaba"));
+    }
+
+    #[test]
+    #[should_panic(expected = "alphabet")]
+    fn my_rg_acceptor_panics() {
+        my_rg_acceptor("abaaaaabcab");
     }
 }
