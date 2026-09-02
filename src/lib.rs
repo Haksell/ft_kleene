@@ -1,5 +1,5 @@
 use itertools::Itertools as _;
-use std::{cmp::min, sync::LazyLock};
+use std::{cmp::min, collections::HashSet, sync::LazyLock};
 
 static DEBUG: LazyLock<bool> = LazyLock::new(|| {
     std::env::var("FT_KLEENE_DEBUG")
@@ -68,6 +68,11 @@ pub fn levenshtein_distance(s1: &str, s2: &str) -> u32 {
     dp[n1][n2]
 }
 
+pub fn kleene_star_acceptor(sigma: &str, s: &str) -> bool {
+    let alphabet = sigma.chars().collect::<HashSet<_>>();
+    s.chars().all(|c| alphabet.contains(&c))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -134,5 +139,23 @@ mod tests {
         assert_eq!(levenshtein_distance("kitten", "sitting"), 3);
         assert_eq!(levenshtein_distance("ooga", "chaka"), 4);
         assert_eq!(levenshtein_distance("levenshtein", "berenstain"), 4);
+    }
+
+    #[test]
+    fn kleene_star_acceptor_works() {
+        assert!(kleene_star_acceptor("hello world!", "hl"));
+        assert!(!kleene_star_acceptor("hello world!", "ec"));
+
+        assert!(kleene_star_acceptor("", ""));
+        assert!(kleene_star_acceptor("a", ""));
+        assert!(kleene_star_acceptor("ab", ""));
+
+        assert!(kleene_star_acceptor("a", "aaaaaaaaaa"));
+        assert!(kleene_star_acceptor("ab", "ababababa"));
+        assert!(kleene_star_acceptor("ab", "aaaaaaaaa"));
+        assert!(kleene_star_acceptor("ab", "bbbbbbbbb"));
+
+        assert!(!kleene_star_acceptor("", "a"));
+        assert!(!kleene_star_acceptor("a", "b"));
     }
 }
