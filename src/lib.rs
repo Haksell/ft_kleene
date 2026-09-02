@@ -75,7 +75,7 @@ pub fn kleene_star_acceptor(sigma: &str, s: &str) -> bool {
 
 /// Accepts strings of the form ab(a|b)aaa(a|b)*ab.
 pub fn my_rg_acceptor(s: &str) -> bool {
-    #[derive(PartialEq)]
+    #[derive(Debug, PartialEq)]
     #[expect(clippy::upper_case_acronyms)]
     enum State {
         Empty,
@@ -97,6 +97,10 @@ pub fn my_rg_acceptor(s: &str) -> bool {
 
     let mut state = State::Empty;
 
+    if *DEBUG {
+        println!("State::{state:?}");
+    }
+
     for c in s.chars() {
         state = match (state, c) {
             (State::Empty, 'a') => State::A,
@@ -108,6 +112,10 @@ pub fn my_rg_acceptor(s: &str) -> bool {
             (State::ABXAAAS | State::ABXAAASA | State::ABXAAASAB, 'a') => State::ABXAAASA,
             (State::ABXAAASA, 'b') => State::ABXAAASAB,
             _ => State::Sink,
+        };
+
+        if *DEBUG {
+            println!("State::{state:?}");
         }
     }
 
