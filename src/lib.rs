@@ -1,3 +1,5 @@
+mod finite_automaton;
+
 use itertools::Itertools as _;
 use std::{cmp::min, collections::HashSet, sync::LazyLock};
 
