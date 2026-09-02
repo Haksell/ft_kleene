@@ -226,6 +226,13 @@ mod tests {
     #[test]
     fn my_rg_acceptor_rejects() {
         assert!(!my_rg_acceptor(""));
+        assert!(!my_rg_acceptor("a"));
+        assert!(!my_rg_acceptor("ab"));
+        assert!(!my_rg_acceptor("aba"));
+        assert!(!my_rg_acceptor("abaa"));
+        assert!(!my_rg_acceptor("abaaa"));
+        assert!(!my_rg_acceptor("abaaaa"));
+        assert!(!my_rg_acceptor("abaaaaa"));
 
         assert!(!my_rg_acceptor("bbaaaaab"));
         assert!(!my_rg_acceptor("aaaaaaab"));
