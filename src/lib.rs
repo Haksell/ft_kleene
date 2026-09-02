@@ -29,9 +29,7 @@ pub fn kleene_star(sigma: &str, m: u32) -> Vec<String> {
         }
     }
 
-    let alphabet = sigma.chars().collect_vec();
-    // TODO: test with should_panic
-    assert!(alphabet.iter().all_unique(), "alphabet should consist of unique characters");
+    let alphabet = sigma.chars().unique().collect_vec();
 
     let mut res = Vec::new();
     dfs(&alphabet, m, &mut String::new(), &mut res);
@@ -95,16 +93,12 @@ mod tests {
         assert_eq!(kleene_star("ab", 0), vec![""]);
         assert_eq!(kleene_star("ab", 1), vec!["", "a", "b"]);
         assert_eq!(kleene_star("ab", 2), vec!["", "a", "aa", "ab", "b", "ba", "bb"]);
+        assert_eq!(kleene_star("ba", 2), vec!["", "b", "bb", "ba", "a", "ab", "aa"]);
+        assert_eq!(kleene_star("abb", 2), vec!["", "a", "aa", "ab", "b", "ba", "bb"]);
         assert_eq!(
             kleene_star("abc", 2),
             vec!["", "a", "aa", "ab", "ac", "b", "ba", "bb", "bc", "c", "ca", "cb", "cc"]
         );
-    }
-
-    #[test]
-    #[should_panic(expected = "alphabet should consist of unique characters")]
-    fn kleene_star_duplicate_symbols() {
-        kleene_star("abb", 2);
     }
 
     #[test]
