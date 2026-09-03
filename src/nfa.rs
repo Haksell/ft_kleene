@@ -10,7 +10,7 @@ struct NFA {
 }
 
 impl NFA {
-    // https://en.wikipedia.org/wiki/Thompson's_construction
+    // https://en.wikipedia.org/wiki/Thompson%27s_construction
     fn new(regex: &str) -> Self {
         todo!()
     }
